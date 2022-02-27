@@ -2,6 +2,7 @@
 wax_account: abcde.wam
 # wax节点链接,默认使用第一个节点
 rpc_domain_list:
+ - https://wax.eu.eosamsterdam.net
  - https://api.wax.alohaeos.com
  - https://wax.dapplica.io
  - https://api.waxsweden.org
