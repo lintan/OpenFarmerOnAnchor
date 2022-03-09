@@ -98,7 +98,7 @@ class Farmer:
         self.url_assets = user_param.assets_domain + '/atomicassets/v1/assets'
         self.http = requests.Session()
         self.http.trust_env = False
-        self.http.request = functools.partial(self.http.request, timeout=30)
+        self.http.request = functools.partial(self.http.request, timeout=60)
         if self.proxy:
             self.http.proxies = {
                 "http": "http://{0}".format(self.proxy),
@@ -122,10 +122,14 @@ class Farmer:
             self.log.info("网络错误: {0}".format(exp))
             self.log.info("正在重试: [{0}]".format(state.attempt_number))
 
-    def http_post(self, post_data):
+    def get_table_row(self, post_data):
+        resp = self.http_post(user_param.query_rpc_domain, '/v1/chain/get_table_rows', post_data)
+        return resp
+
+    def http_post(self, domain, api, post_data):
         # rpc_domain = random.choice(user_param.rpc_domain_list)
-        url_table_row = user_param.rpc_domain + '/v1/chain/get_table_rows'
-        resp = self.http.post(url_table_row, json=post_data)
+        url = domain + api
+        resp = self.http.post(url, json=post_data)
         return resp
 
     def table_row_template(self) -> dict:
@@ -160,7 +164,7 @@ class Farmer:
             "reverse": False,
             "show_payer": False
         }
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get tools config:{0}".format(resp.text))
         resp = resp.json()
         res.init_tool_config(resp["rows"])
@@ -169,7 +173,7 @@ class Farmer:
 
         # 农作物
         post_data["table"] = "cropconf"
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get crop config:{0}".format(resp.text))
         resp = resp.json()
         res.init_crop_config(resp["rows"])
@@ -177,7 +181,7 @@ class Farmer:
 
         # 动物
         post_data["table"] = "anmconf"
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get animal conf:{0}".format(resp.text))
         resp = resp.json()
         res.init_animal_config(resp["rows"])
@@ -185,7 +189,7 @@ class Farmer:
 
         # 会员卡
         post_data["table"] = "mbsconf"
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get mbs config:{0}".format(resp.text))
         resp = resp.json()
         res.init_mbs_config(resp["rows"])
@@ -206,7 +210,7 @@ class Farmer:
             "reverse": False,
             "show_payer": False
         }
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get farming config:{0}".format(resp.text))
         resp = resp.json()
 
@@ -218,7 +222,7 @@ class Farmer:
         post_data["table"] = "accounts"
         post_data["index_position"] = 1
 
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get_table_rows:{0}".format(resp.text))
         resp = resp.json()
         if len(resp["rows"]) == 0:
@@ -249,7 +253,7 @@ class Farmer:
         post_data["table"] = "buildings"
         post_data["index_position"] = 2
 
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get_buildings_info:{0}".format(resp.text))
         resp = resp.json()
         buildings = []
@@ -273,7 +277,7 @@ class Farmer:
         post_data["table"] = "crops"
         post_data["index_position"] = 2
 
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get_crops_info:{0}".format(resp.text))
         resp = resp.json()
         crops = []
@@ -435,7 +439,7 @@ class Farmer:
         post_data["table"] = "breedings"
         post_data["index_position"] = 2
 
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get_breedings:{0}".format(resp.text))
         resp = resp.json()
         if len(resp["rows"]) == 0:
@@ -454,7 +458,7 @@ class Farmer:
         post_data["table"] = "animals"
         post_data["index_position"] = 2
 
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get_animal_info:{0}".format(resp.text))
         resp = resp.json()
         if len(resp["rows"]) == 0:
@@ -587,22 +591,20 @@ class Farmer:
 
     # 获取wax账户信息
     def wax_get_account(self):
-        url = self.url_rpc + "get_account"
         post_data = {"account_name": self.wax_account}
-        resp = self.http.post(url, json=post_data)
+        resp = self.http_post(user_param.query_rpc_domain, '/v1/chain/get_account', post_data)
         self.log.debug("get_account:{0}".format(resp.text))
         resp = resp.json()
         return resp
 
     # 获取三种资源的代币余额 FWF FWG FWW
     def get_fw_balance(self) -> Token:
-        url = self.url_rpc + "get_currency_balance"
         post_data = {
             "code": "farmerstoken",
             "account": self.wax_account,
             "symbol": None
         }
-        resp = self.http.post(url, json=post_data)
+        resp = self.http_post(user_param.query_rpc_domain, '/v1/chain/get_currency_balance', post_data)
 
         self.log.debug("get_fw_balance:{0}".format(resp.text))
         resp = resp.json()
@@ -686,7 +688,7 @@ class Farmer:
         post_data["table"] = "buildings"
         post_data["index_position"] = 2
 
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get_buildings_info:{0}".format(resp.text))
         resp = resp.json()
         for item in resp["rows"]:
@@ -961,7 +963,7 @@ class Farmer:
         post_data["table"] = "tools"
         post_data["index_position"] = 2
 
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get_tools:{0}".format(resp.text))
         resp = resp.json()
         tools = []
@@ -1267,7 +1269,7 @@ class Farmer:
         post_data["index_position"] = 2
         post_data["key_type"] = "i64"
 
-        resp = self.http_post(post_data)
+        resp = self.get_table_row(post_data)
         self.log.debug("get_mbs:{0}".format(resp.text))
         resp = resp.json()
         mbs = []

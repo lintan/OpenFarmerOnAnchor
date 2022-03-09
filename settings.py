@@ -22,30 +22,31 @@ class Settings:
 # 用户配置参数
 class user_param:
     wax_account: str = None
-    use_proxy: bool = True
+    use_proxy: bool = False
     proxy: str = None
     rpc_domain_list: list = []
+    query_rpc_domain: str = None
     rpc_domain: str = None
     assets_domain: str = None
     assets_domain_list: list = []
 
-    build: bool = True
-    mining: bool = True
-    chicken: bool = True
-    plant: bool = True
-    cow: bool = True
-    mbs: bool = True
+    build: bool = False
+    mining: bool = False
+    chicken: bool = False
+    plant: bool = False
+    cow: bool = False
+    mbs: bool = False
     mbs_mint: bool = False
     # 能量不够的时候，就去恢复那么多能量,但不超过最大能量
     recover_energy: int = 500
 
-    withdraw: bool = True
-    auto_deposit: bool = True
-    sell_corn: bool = True
-    sell_barley: bool = True
-    sell_milk: bool = True
-    sell_egg: bool = True
-    auto_plant: bool = True
+    withdraw: bool = False
+    auto_deposit: bool = False
+    sell_corn: bool = False
+    sell_barley: bool = False
+    sell_milk: bool = False
+    sell_egg: bool = False
+    auto_plant: bool = False
     min_energy: int = 50
 
     on_server: bool = False
@@ -90,6 +91,7 @@ class user_param:
             "use_proxy": user_param.use_proxy,
             "proxy": user_param.proxy,
             "rpc_domain_list": user_param.rpc_domain_list,
+            "query_rpc_domain": user_param.query_rpc_domain,
             "rpc_domain": user_param.rpc_domain,
             "assets_domain_list": user_param.assets_domain_list,
             "assets_domain": user_param.assets_domain,
@@ -138,9 +140,10 @@ class user_param:
 
 def load_user_param(user: dict):
     user_param.wax_account = user["wax_account"]
-    user_param.use_proxy = user.get("use_proxy", True)
+    user_param.use_proxy = user.get("use_proxy", False)
     user_param.proxy = user.get("proxy", None)
     user_param.rpc_domain_list = user.get("rpc_domain_list", ['https://api.wax.alohaeos.com'])
+    user_param.query_rpc_domain = user.get("query_rpc_domain", 'https://api.wax.alohaeos.com')
     user_param.rpc_domain = user.get("rpc_domain", 'https://api.wax.alohaeos.com')
     user_param.assets_domain_list = user.get("assets_domain_list", ['https://wax.api.atomicassets.io'])
     user_param.assets_domain = user.get("assets_domain", 'https://wax.api.atomicassets.io')

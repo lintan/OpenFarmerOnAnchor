@@ -1,21 +1,27 @@
 # 账户名
-wax_account: abcde.wam
-# wax节点链接,默认使用第一个节点
+wax_account: zhanghaoming
+# wax节点链接列表
 rpc_domain_list:
- - https://api.wax.alohaeos.com
- - https://wax.dapplica.io
- - https://api.waxsweden.org
- - https://wax.pink.gg
- - https://wax.eosphere.io
- - https://api.wax.greeneosio.com
- - https://wax.cryptolions.io
-rpc_domain: https://api.wax.alohaeos.com
+- https://api.wax.alohaeos.com
+- https://wax.dapplica.io
+- https://api.waxsweden.org
+- https://wax.pink.gg
+- https://api.wax.greeneosio.com
+- https://wax.eu.eosamsterdam.net
+- https://wax.eosdublin.io
+- https://wax.eosusa.news
+- https://wax.greymass.com
+- https://api-wax-mainnet.wecan.dev
+# 选中的查询节点
+query_rpc_domain: https://api.wax.alohaeos.com
+# 选中的执行合约节点
+rpc_domain: https://wax.pink.gg
 # 原子市场节点链接,默认使用第一个节点
 assets_domain_list:
-  - https://wax.api.atomicassets.io
-  - https://atomic.wax.eosrio.io
+- https://wax.api.atomicassets.io
+- https://atomic.wax.eosrio.io
 assets_domain: https://wax.api.atomicassets.io
-# only http proxy like 127.0.0.1:10809
+# only http proxy like 127.0.0.1:1080
 use_proxy: false
 proxy: null
 # 建造、采集资源、养鸡、养牛、种地、会员点击，需要程序自动化的操作，设置为true
