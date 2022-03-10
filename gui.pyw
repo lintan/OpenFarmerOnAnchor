@@ -55,6 +55,12 @@ class MyDialog(QDialog, Ui_Dialog):
         super().__init__(parent)
         self.user_yml = "user.yml"
         self.farmer = Farmer()
+        if len(sys.argv) == 2:
+            self.user_yml = sys.argv[1]
+        with open(self.user_yml, "r", encoding="utf8") as file:
+            user: dict = yaml.load(file, Loader=yaml.FullLoader)
+            file.close()
+        load_user_param(user)
         self.setupUi(self)
         self.setWindowTitle("农民世界助手-Anchor钱包版{0}".format(version))
         self.setWindowIcon(QtGui.QIcon(resource_path("favicon.ico")))
@@ -71,12 +77,7 @@ class MyDialog(QDialog, Ui_Dialog):
         self.worker = Worker(self.farmer)
 
     def load_yaml(self):
-        if len(sys.argv) == 2:
-            self.user_yml = sys.argv[1]
-        with open(self.user_yml, "r", encoding="utf8") as file:
-            user: dict = yaml.load(file, Loader=yaml.FullLoader)
-            file.close()
-        load_user_param(user)
+
         self.update_ui(False)
 
     def update_ui(self, ui_to_user_param: bool):
